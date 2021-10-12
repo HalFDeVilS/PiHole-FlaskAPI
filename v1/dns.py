@@ -13,6 +13,7 @@ import auth as auth
 dns = Flask(__name__)
 cors = CORS(dns, resources={r"/api/*": {"origins": "*"}})
 
+
 def configure_logging():
     # register root logging
     logging.getLogger('werkzeug').setLevel(logging.INFO)
@@ -20,20 +21,13 @@ def configure_logging():
     file_handler = logging.FileHandler(filename='app.log')
     stdout_handler = logging.StreamHandler(sys.stdout)
     handlers = [file_handler, stdout_handler]
-    #handlers = [file_handler]
+    # handlers = [file_handler]
 
     logging.basicConfig(
         level=logging.INFO,
         format='[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s',
         handlers=handlers
     )
-
-
-
-""" @dns.route("/")
-def index():
-    return render_template("index.html") """
-
 
 
 '''Swagger Blueprint'''
@@ -55,12 +49,14 @@ dns.register_blueprint(gravity.gravity)
 dns.register_blueprint(ftl.ftl)
 dns.register_blueprint(macvendor.macvendor)
 
+
 @dns.route("/")
 def index():
     return redirect('/api')
 
+
 if __name__ == '__main__':
     from waitress import serve
+
     configure_logging()
     serve(dns, host="0.0.0.0", port=5000)
-

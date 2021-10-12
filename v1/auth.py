@@ -5,9 +5,7 @@ import secrets
 import string
 import jwt
 from flask import Blueprint, request, jsonify
-from database import connectDB, getPyConfig
-from database import fullpath
-from database import closeDB
+from database import getPyConfig
 from database import getData
 
 log = logging.getLogger(__name__)
@@ -15,16 +13,17 @@ authentication = Blueprint('authentication', __name__)
 database = "setupVars.conf"
 clients = []
 
+
 @authentication.route('/api/v1/signin', methods=['POST'])
 def Signin():
     result = {
         'message': 'failure'
     }
-    
+
     if isPasswordValid(request.args.get('password')):
         result['message'] = 'success'
         result['token'] = generateToken()
-    else: 
+    else:
         return jsonify(result), 401
     return jsonify(result)
 
@@ -34,10 +33,10 @@ def Signout():
     result = {
         'message': 'failure'
     }
-    
+
     if isTokenValid(request.args.get('token')):
         result['message'] = 'success'
-    else: 
+    else:
         return jsonify(result), 401
     return jsonify(result)
 
@@ -48,7 +47,7 @@ def isPasswordValid(password):
         dbhashpassword = db['webpassword']
         hashpassword = hashlib.sha256(password.encode('utf-8')).hexdigest()
         hashpassword = hashlib.sha256(hashpassword.encode('utf-8')).hexdigest()
-        if(hashpassword == dbhashpassword):
+        if hashpassword == dbhashpassword:
             return True
         else:
             return False
@@ -57,11 +56,11 @@ def isPasswordValid(password):
 
 
 def isAPIKeyValid(password):
-    if password != "" and password != None:
+    if password != "" and password is not None:
         db = dict(getData(database, "=", True))
         dbhashpassword = db['webpassword']
         # Token can also be used as API key
-        if(password == dbhashpassword or isTokenValid(password)):
+        if password == dbhashpassword or isTokenValid(password):
             return True
         else:
             return False
@@ -82,8 +81,8 @@ def isTokenValid(token):
 
 def generateToken():
     # ct stores current time
-    ct = datetime.datetime.now() + datetime.timedelta(minutes = 30)
-    
+    ct = datetime.datetime.now() + datetime.timedelta(minutes=30)
+
     # ts store timestamp of current time
     ts = ct.timestamp()
 
@@ -102,5 +101,3 @@ def decodetoken(token):
     except jwt.ExpiredSignatureError as error:
         log.info("Token has been expired....")
     return decoded
-
-    

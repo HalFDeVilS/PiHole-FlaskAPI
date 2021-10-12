@@ -1,4 +1,4 @@
-from database import getData
+from database import getData, getFTLHost
 import socket
 import sys
 import logging
@@ -39,14 +39,24 @@ def getFullFTLConfig():
     return fullConfig
 
 
-def sendRequestToFTL(message='<stats', splitter=' ', address=localaddress, port=defaultport):
+def sendRequestToFTL(message='<stats', splitter=' ', address=None, port=None):
     data = ""
     oldresponse = b""
     config = getFullFTLConfig()
+    ftlhost = getFTLHost()
+
+    if ftlhost is not None and address is None:
+        address = ftlhost
+    else:
+        address = defaultport
+
+    if port is not None:
+        port = config['ftlport']
+    else:
+        port = defaultport
+
     if message != '':
         try:
-            if address == localaddress:
-                port = config['ftlport']
             connsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             connsocket.connect((address, int(port)))
             log.info("Connected To FTLDNS...........Attempting to send message")

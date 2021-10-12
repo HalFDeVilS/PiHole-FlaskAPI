@@ -19,6 +19,10 @@ def fullpath(dbfile):
     dbpath = records['path'] + dbfile
     return dbpath
 
+def getFTLHost():
+    records = getPyConfig()
+    host = records['ftl-host']
+    return host
 
 def getPyConfig():
     abspath = sys.argv[0]
